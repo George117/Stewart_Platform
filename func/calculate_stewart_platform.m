@@ -162,6 +162,24 @@ for i= 1:6
                     servo_arm_length*sin(angles(i))];
 end
 
+debug = 0;
+
+if debug == 1
+    fprintf("r_B: %f [m]\n", r_B)
+    fprintf("r_P: %f [m]\n", r_P)
+    fprintf("servo_arm_length: %f [m]\n", servo_arm_length)
+    fprintf("rod_length: %f [m]\n", rod_length)
+    fprintf("alpha_B: %f [deg]\n", alpha_B * (180/pi))
+    fprintf("alpha_P: %f [deg]\n", alpha_P * (180/pi))
+    
+    fprintf("trans X: %f [cm]\n", trans(1))
+    fprintf("trans Y: %f [cm]\n", trans(2))
+    fprintf("trans Z: %f [cm]\n", trans(3))
+    
+    fprintf("orient R: %f [deg]\n", orient(1) * (180/pi))
+    fprintf("orient P: %f [deg]\n", orient(2) * (180/pi))
+    fprintf("orient Y: %f [deg]\n", orient(3) * (180/pi))
+end
 
 
 %% Plot the stewart platform
