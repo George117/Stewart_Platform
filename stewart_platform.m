@@ -64,12 +64,18 @@ guidata(hObject, handles);
 handles.trans=[0 0 0];
 handles.orient=[0 0 0 ];
 handles.ardu=0;
-handles.arduino_status=0;
+handles.arduino_status=1;
 handles.servos=0;
 handles.toggle=0;
 do_the_stewart(handles);
 guidata(hObject, handles);
 
+% serial comm
+global platform_com_stm;
+platform_com_stm = platform_com;
+platform_com_stm.open_serial("COM17");
+platform_com_stm.send_data(69)
+platform_com_stm.initialized = 1
 
 % --- Outputs from this function are returned to the command line.
 function varargout = stewart_platform_OutputFcn(hObject, eventdata, handles) 
@@ -87,6 +93,10 @@ function exit_pushbutton_Callback(hObject, eventdata, handles)
 % hObject    handle to exit_pushbutton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+global platform_com_stm;
+platform_com_stm.initialized = 0;
+platform_com_stm.close_serial();
 
 %Exit the GUI
 close all;
@@ -653,16 +663,17 @@ set(handles.show_angle6,'String', num2str(angles(6)*180/pi));
 
 if(handles.arduino_status && imag_count==6)
 
-
+    global platform_com_stm;
     angles= angles*180/pi;
-    servo_angles= ([90 90 90 90 90 90]+angles)/180;  
 
-    writePosition(handles.s1, 1-servo_angles(1));
-    writePosition(handles.s2, servo_angles(2));
-    writePosition(handles.s3, 1-servo_angles(3));
-    writePosition(handles.s4, servo_angles(4));
-    writePosition(handles.s5, 1-servo_angles(5));
-    writePosition(handles.s6, servo_angles(6));
+    servo_angles= ([90 90 90 90 90 90]+angles);  
+
+  fprintf("69initialized: %d [deg]\n", platform_com_stm.initialized)
+    if platform_com_stm.initialized==1
+        fprintf("show_angle: %f [deg]\n", servo_angles)
+        platform_com_stm.send_data(65)
+    end
+
 end
 lag=toc;
 disp('Calc duration: ')
