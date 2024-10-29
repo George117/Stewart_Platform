@@ -5,19 +5,20 @@ classdef platform_com
    methods
        function res = open_serial(obj,com_port)
          global com_platform
-         com_platform = serialport(com_port,115200)
+         com_platform = serialport(com_port,115200);
+         fprintf("%s initialized\n", com_port);
          res = 1;
        end
 
        function res = send_data(obj,data)
          global com_platform
-         write(com_platform,data,"uint8")
+         write(com_platform,data,"uint8");
          res = 1;
        end
 
       function res = close_serial(obj)
          global com_platform
-         delete(com_platform)
+         delete(com_platform);
          res = 1;
       end
    end

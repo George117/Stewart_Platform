@@ -51,7 +51,7 @@ function stewart_platform_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to stewart_platform (see VARARGIN)
-
+clc;
 % Choose default command line output for stewart_platform
 handles.output = hObject;
 
@@ -74,8 +74,7 @@ guidata(hObject, handles);
 global platform_com_stm;
 platform_com_stm = platform_com;
 platform_com_stm.open_serial("COM17");
-platform_com_stm.send_data(69)
-platform_com_stm.initialized = 1
+platform_com_stm.initialized = 1;
 
 % --- Outputs from this function are returned to the command line.
 function varargout = stewart_platform_OutputFcn(hObject, eventdata, handles) 
@@ -667,14 +666,18 @@ if(handles.arduino_status && imag_count==6)
     angles= angles*180/pi;
 
     servo_angles= ([90 90 90 90 90 90]+angles);  
+    servo_angles = round(servo_angles);
 
-  fprintf("69initialized: %d [deg]\n", platform_com_stm.initialized)
+    servo_angles = [182, servo_angles];
+
+    %fprintf("%f ",servo_angles)
+
     if platform_com_stm.initialized==1
-        fprintf("show_angle: %f [deg]\n", servo_angles)
-        platform_com_stm.send_data(65)
+        platform_com_stm.send_data(servo_angles);
     end
 
+%lag=toc;
+%disp('Calc duration: ')
+%disp(lag)
 end
-lag=toc;
-disp('Calc duration: ')
-disp(lag)
+
