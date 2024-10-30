@@ -22,7 +22,7 @@ function varargout = stewart_platform(varargin)
 
 % Edit the above text to modify the response to help stewart_platform
 
-% Last Modified by GUIDE v2.5 17-Oct-2016 14:36:37
+% Last Modified by GUIDE v2.5 30-Oct-2024 09:37:59
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -61,20 +61,16 @@ guidata(hObject, handles);
 % UIWAIT makes stewart_platform wait for user response (see UIRESUME)
 % uiwait(handles.stewart_platform_panel);
 % Initialise variables
+global com_initialized;
 handles.trans=[0 0 0];
 handles.orient=[0 0 0 ];
 handles.ardu=0;
 handles.arduino_status=1;
+com_initialized = 0;
 handles.servos=0;
 handles.toggle=0;
 do_the_stewart(handles);
 guidata(hObject, handles);
-
-% serial comm
-global platform_com_stm;
-platform_com_stm = platform_com;
-platform_com_stm.open_serial("COM17");
-platform_com_stm.initialized = 1;
 
 % --- Outputs from this function are returned to the command line.
 function varargout = stewart_platform_OutputFcn(hObject, eventdata, handles) 
@@ -94,7 +90,8 @@ function exit_pushbutton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 global platform_com_stm;
-platform_com_stm.initialized = 0;
+global com_initialized;
+com_initialized = 0;
 platform_com_stm.close_serial();
 
 %Exit the GUI
@@ -663,6 +660,7 @@ set(handles.show_angle6,'String', num2str(angles(6)*180/pi));
 if(handles.arduino_status && imag_count==6)
 
     global platform_com_stm;
+    global com_initialized;
     angles= angles*180/pi;
 
     servo_angles= ([90 90 90 90 90 90]+angles);  
@@ -672,7 +670,7 @@ if(handles.arduino_status && imag_count==6)
 
     %fprintf("%f ",servo_angles)
 
-    if platform_com_stm.initialized==1
+    if com_initialized==1
         platform_com_stm.send_data(servo_angles);
     end
 
@@ -680,4 +678,50 @@ if(handles.arduino_status && imag_count==6)
 %disp('Calc duration: ')
 %disp(lag)
 end
+
+
+% --- Executes on button press in connect_button.
+function connect_button_Callback(hObject, eventdata, handles)
+% hObject    handle to connect_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global platform_com_stm;
+global platform_com_port;
+global com_initialized;
+button_state = get(hObject,'Value');
+
+% serial comm
+if button_state == 1
+    platform_com_stm = platform_com;
+    platform_com_stm.open_serial(platform_com_port);
+    com_initialized = 1;
+    set(handles.status_text, 'String', "Connected") 
+end
+
+
+% --- Executes on button press in disconnect_button.
+function disconnect_button_Callback(hObject, eventdata, handles)
+% hObject    handle to disconnect_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global platform_com_stm;
+global com_initialized;
+button_state = get(hObject,'Value');
+
+if button_state == 1
+    com_initialized = 0;
+    platform_com_stm.close_serial();
+    set(handles.status_text, 'String', "Disconnected") 
+end
+
+
+function com_port_text_Callback(hObject, eventdata, handles)
+% hObject    handle to com_port_text (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of com_port_text as text
+%        str2double(get(hObject,'String')) returns contents of com_port_text as a double
+global platform_com_port
+platform_com_port = get(hObject,'String');
 

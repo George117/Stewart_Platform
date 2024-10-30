@@ -6,7 +6,7 @@ classdef platform_com
        function res = open_serial(obj,com_port)
          global com_platform
          com_platform = serialport(com_port,115200);
-         fprintf("%s initialized\n", com_port);
+         fprintf("%s connected\n", com_port);
          res = 1;
        end
 
@@ -19,6 +19,7 @@ classdef platform_com
       function res = close_serial(obj)
          global com_platform
          delete(com_platform);
+         fprintf("COM disconnected\n");
          res = 1;
       end
    end
