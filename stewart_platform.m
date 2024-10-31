@@ -725,5 +725,6 @@ function com_port_text_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of com_port_text as text
 %        str2double(get(hObject,'String')) returns contents of com_port_text as a double
 global platform_com_port
+set(handles.com_port_text, 'BackgroundColor', [0,1,0]) 
 platform_com_port = get(hObject,'String');
 
