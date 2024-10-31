@@ -664,11 +664,46 @@ if(handles.arduino_status && imag_count==6)
     angles= angles*180/pi;
 
     servo_angles= ([90 90 90 90 90 90]+angles);  
+
+    % scale to preserve 2 digits precision
+    servo_angles = servo_angles * 100;
+
+    % round to remove beyond 2 digits
     servo_angles = round(servo_angles);
+    
+    %fprintf("____________________________ \n")
+    %fprintf("%x \n",servo_angles)
+    %fprintf("\n")
 
-    servo_angles = [182, servo_angles];
+    % split values in individual bytes
+    servo1_high_byte = bitand(servo_angles(1), 0xff00, "uint16");
+    servo1_high_byte = bitsra(servo1_high_byte, 8);
+    servo1_low_byte = bitand(servo_angles(1), 0x00ff, "uint16");
 
-    %fprintf("%f ",servo_angles)
+    servo2_high_byte = bitand(servo_angles(2), 0xff00, "uint16");
+    servo2_high_byte = bitsra(servo2_high_byte, 8);
+    servo2_low_byte = bitand(servo_angles(2), 0x00ff, "uint16");
+    
+    servo3_high_byte = bitand(servo_angles(3), 0xff00, "uint16");
+    servo3_high_byte = bitsra(servo3_high_byte, 8);
+    servo3_low_byte = bitand(servo_angles(3), 0x00ff, "uint16");
+
+    servo4_high_byte = bitand(servo_angles(4), 0xff00, "uint16");
+    servo4_high_byte = bitsra(servo4_high_byte, 8);
+    servo4_low_byte = bitand(servo_angles(4), 0x00ff, "uint16");
+
+    servo5_high_byte = bitand(servo_angles(5), 0xff00, "uint16");
+    servo5_high_byte = bitsra(servo5_high_byte, 8);
+    servo5_low_byte = bitand(servo_angles(5), 0x00ff, "uint16");
+
+    servo6_high_byte = bitand(servo_angles(6), 0xff00, "uint16");
+    servo6_high_byte = bitsra(servo6_high_byte, 8);
+    servo6_low_byte = bitand(servo_angles(6), 0x00ff, "uint16");
+
+    % create command
+    servo_angles = [182, servo1_high_byte, servo1_low_byte, servo2_high_byte, servo2_low_byte, servo3_high_byte, servo3_low_byte, servo4_high_byte, servo4_low_byte, servo5_high_byte, servo5_low_byte, servo6_high_byte, servo6_low_byte,];
+
+    %fprintf("%x \n",servo_angles)
 
     if com_initialized==1
         platform_com_stm.send_data(servo_angles);
