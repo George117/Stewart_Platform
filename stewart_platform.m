@@ -696,6 +696,7 @@ if button_state == 1
     platform_com_stm.open_serial(platform_com_port);
     com_initialized = 1;
     set(handles.status_text, 'String', "Connected") 
+    set(handles.status_text, 'BackgroundColor', [0,1,0]) 
 end
 
 
@@ -712,6 +713,7 @@ if button_state == 1
     com_initialized = 0;
     platform_com_stm.close_serial();
     set(handles.status_text, 'String', "Disconnected") 
+    set(handles.status_text, 'BackgroundColor', [1,0,0]) 
 end
 
 
